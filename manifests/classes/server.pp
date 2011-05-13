@@ -12,7 +12,7 @@ Parameters:
 
 */
 class mysql::server {
-
+  require mysql::augeas
   include mysql::params
 
   user { "mysql":
@@ -50,11 +50,6 @@ class mysql::server {
     require => Package["mysql-server"],
   }
 
-  file { "/usr/share/augeas/lenses/contrib/mysql.aug":
-    ensure => present,
-    source => "puppet:///mysql/mysql.aug",
-  }
-
   augeas { "my.cnf/mysqld":
     context => "${mysql::params::mycnfctx}/mysqld/",
     load_path => "/usr/share/augeas/lenses/contrib/",
@@ -78,7 +73,7 @@ class mysql::server {
         default => "set socket /var/run/mysqld/mysqld.sock",
       }
     ],
-    require => [ File["/etc/mysql/my.cnf"], File["${mysql::params::data_dir}"] ],
+    require => [ File["/etc/mysql/my.cnf"], File["${mysql::params::data_dir}"], File['mysql-lens'], ],
     notify => Service["mysql"],
   }
 
@@ -94,7 +89,7 @@ class mysql::server {
       "rm master-password",
       "rm report-host"
     ],
-    require => File["/etc/mysql/my.cnf"],
+    require => [ File["/etc/mysql/my.cnf"], File['mysql-lens'], ],
     notify => Service["mysql"],
   }
 
@@ -108,7 +103,7 @@ class mysql::server {
         default => "set socket /var/run/mysqld/mysqld.sock",
       }
     ],
-    require => File["/etc/mysql/my.cnf"],
+    require => [ File["/etc/mysql/my.cnf"], File['mysql-lens'], ],
     notify => Service["mysql"],
   }
 
@@ -139,7 +134,7 @@ class mysql::server {
      "rm myisamchk/read_buffer",
      "rm myisamchk/write_buffer"
     ],
-    require => File["/etc/mysql/my.cnf"],
+    require => [ File["/etc/mysql/my.cnf"], File['mysql-lens'], ],
     notify => Service["mysql"],
   }
 
@@ -152,7 +147,7 @@ class mysql::server {
         default => "set socket /var/run/mysqld/mysqld.sock",
       }
     ],
-    require => File["/etc/mysql/my.cnf"],
+    require => [ File["/etc/mysql/my.cnf"], File['mysql-lens'], ],
   }
 
   service { "mysql":
