@@ -1,16 +1,23 @@
 # -*- tab-width: 4; ruby-indent-level: 4; indent-tabs-mode: t -*-
-Puppet::Type.type(:mysql_user).provide(:mysql) do
+require 'puppet/provider/package.rb'
+Puppet::Type.type(:mysql_user).provide :mysql, :parent => Puppet::Provider::Package  do
 
 	desc "Use mysql as database."
 	# this is a bit of a hack.
 	# Since puppet evaluates what provider to use at start time rather than run time
 	# we can't specify that commands will exist. Instead we call manually.
 	# I would make these call execute directly, but execpipe needs the path
-	def mysqladmin
+	def self.mysqladmin
 		'/usr/bin/mysqladmin'
 	end
-	def mysql
+	def self.mysql
 		'/usr/bin/mysql'
+	end
+	def mysqladmin
+		self.class.mysqladmin
+	end
+	def mysql
+		self.class.mysql
 	end
 
 	# retrieve the current set of mysql users
