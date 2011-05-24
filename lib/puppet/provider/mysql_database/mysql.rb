@@ -1,4 +1,5 @@
 # -*- tab-width: 4; ruby-indent-level: 4; indent-tabs-mode: t -*-
+require 'puppet/provider/package'
 Puppet::Type.type(:mysql_database).provide :mysql, :parent => Puppet::Provider::Package do
 	desc "Provide MySQL interactions via /usr/bin/mysql"
 
